@@ -10,17 +10,17 @@ public class BallInformationMessageTest {
 
 	@Test
 	public void testParseString() {
-		BallInformationMessage expected1 = new BallInformationMessage(12.0,0.5, false);
-		BallInformationMessage actual1 = BallInformationMessage.parseString("12.0;0.5;false;");
+		BallInformationMessage expected1 = new BallInformationMessage(12.0,1200, false);
+		BallInformationMessage actual1 = BallInformationMessage.parseString("12.0;1200;false;");
 
-		assertEquals(expected1.getTime(), actual1.getTime(), 0.05);
+		assertEquals(expected1.getTime(), actual1.getTime(), 1200);
 		assertEquals(expected1.getXcoord(), actual1.getXcoord(), 0.05);
 		assertEquals(expected1.isRed(), actual1.isRed());
 		
-		BallInformationMessage expected2 = new BallInformationMessage(1234.5678,9876.5432, true);
-		BallInformationMessage actual2 = BallInformationMessage.parseString("1234.5678;9876.5432;true;");
+		BallInformationMessage expected2 = new BallInformationMessage(1234.5678,985331, true);
+		BallInformationMessage actual2 = BallInformationMessage.parseString("1234.5678;985331;true;");
 
-		assertEquals(expected2.getTime(), actual2.getTime(), 0.05);
+		assertEquals(expected2.getTime(), actual2.getTime(), 985331);
 		assertEquals(expected2.getXcoord(), actual2.getXcoord(), 0.05);
 		assertEquals(expected2.isRed(), actual2.isRed());
 		
@@ -36,7 +36,7 @@ public class BallInformationMessageTest {
 	}
 	@Test
 	public void testToString() {
-		assertEquals("12.0;0.5;false;", new BallInformationMessage(12.0,0.5, false).toString());
+		assertEquals("12.0;1200;false;", new BallInformationMessage(12.0,1200, false).toString());
 	}
 
 }

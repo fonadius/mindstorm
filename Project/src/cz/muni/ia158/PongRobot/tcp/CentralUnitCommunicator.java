@@ -32,7 +32,7 @@ public class CentralUnitCommunicator {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				BallInformationMessage message = new BallInformationMessage(random.nextDouble()*100, random.nextDouble()*100);
+				BallInformationMessage message = new BallInformationMessage(random.nextDouble()*100, random.nextLong()*100);
 				System.out.println("Server writing: " + message.toString());
 				connection.write(message.toString() + "\n");
 				

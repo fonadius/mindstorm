@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import cz.muni.ia158.Motors.MotorDriver;
+
 public class RobotCommunicator {
 	public static TCPConnection transmitter;
 	volatile private boolean run = true;
+	private final MotorDriver md = new MotorDriver();
 
 	public RobotCommunicator() {
 		System.out.println("Robot");
@@ -27,6 +30,14 @@ public class RobotCommunicator {
 					try {
 						message = transmitter.readLineBlocking();
 						BallInformationMessage ballInfo = BallInformationMessage.parseString(message);
+						double goalX = ballInfo.getXcoord();
+						long timeToImpact = ballInfo.getTime();
+						
+						if (md.canBeReached(goalX, timeToImpact)) {
+							md.goTo(goalX, timeToImpact);
+						} else {
+							System.out.println("Goal cannot be reached in time => ignoring ball");
+						}
 						System.out.println("Robot recieved: " + ballInfo);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
