@@ -3,77 +3,57 @@ package cz.muni.ia158.PongRobot.tcp;
 import static cz.muni.ia158.PongRobot.settings.Settings.runtimeSettings;
 
 import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import cz.muni.ia158.Motors.MotorDriver;
+import cz.muni.ia158.Motors.MotorController;
+import cz.muni.ia158.PongRobot.settings.Settings;
 
-public class RobotCommunicator {
-	public static TCPConnection transmitter;
-	volatile private boolean run = true;
-	private final MotorDriver md = new MotorDriver();
+public class RobotCommunicator implements Runnable{
+	private TCPConnection transmitter;
+	private final BlockingQueue<BallInformationMessage> queue;
 
-	public RobotCommunicator() {
-		System.out.println("Robot");
+	public RobotCommunicator(BlockingQueue<BallInformationMessage> queue) {
+		this.queue = queue;
+	}
+
+	@Override
+	public void run() {
+		System.out.println("Starting robot communication");
 		try {
 			transmitter = new TCPConnection(runtimeSettings.getServerUrl(), runtimeSettings.getControlUnitPort());
 		} catch (IOException ex) {
-			Logger.getLogger(RobotCommunicator.class.getName()).log(Level.SEVERE, null, ex);
+			System.out.println("Cannot create transmitter: " + ex);
+			ex.printStackTrace();
 		}
-
-		new Thread() {
-			@Override
-			public void run() {
-				while (run) {
-
-					String message;
-					try {
-						message = transmitter.readLineBlocking();
-						BallInformationMessage ballInfo = BallInformationMessage.parseString(message);
-						double goalX = ballInfo.getXcoord();
-						long timeToImpact = ballInfo.getTime();
-						
-						if (md.canBeReached(goalX, timeToImpact)) {
-							md.goTo(goalX, timeToImpact);
-						} else {
-							System.out.println("Goal cannot be reached in time => ignoring ball");
-						}
-						System.out.println("Robot recieved: " + ballInfo);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
+		
+		while (!Thread.currentThread().isInterrupted()) {
+			String message;
+			try {
+				message = transmitter.readLineBlocking();
+				BallInformationMessage ballInfo = BallInformationMessage.parseString(message);
+				System.out.println("Robot recieved msg: " + ballInfo);
+				
+				boolean added = queue.offer(ballInfo, Settings.QueueWaitingTime, TimeUnit.MILLISECONDS);
+				if (!added) {
+					System.out.println("Waiting for queue timmed out. Msg is dropped.");
 				}
-				try {
-					transmitter.close();
-				} catch (IOException ex) {
-					Logger.getLogger(RobotCommunicator.class.getName()).log(Level.SEVERE, null, ex);
-				}
+			} catch (IOException ex) {
+				System.out.println("Error during communication: " + ex);
+				ex.printStackTrace();
+			} catch (InterruptedException ex) {
+				System.out.println("Waiting for queue offer was interupted: " + ex);
+				ex.printStackTrace();
 			}
-		}.start();
+		}
+		try {
+			transmitter.close();
+		} catch (IOException ex) {
+			System.out.println("Transmitter cannot be closed: " + ex);
+			ex.printStackTrace();
+		}
 	}
-	
-	 //should not be needed, but those tcp connections are bidirectional.
-    private void sendMessage(String str) {
-        System.out.println("SENDING: " + str);
-        try {
-            transmitter.write(str + "\n");
-        } catch (IOException ex) {
-            Logger.getLogger(RobotCommunicator.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public boolean isRunning() {
-        return run;
-    }
-
-    public void setRunning(boolean run) {
-        this.run = run;
-    }
-    
-    public static void main(String[] args) {
-    
-    	RobotCommunicator communicator = new RobotCommunicator();
- 	}
+   
 }

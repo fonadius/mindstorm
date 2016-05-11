@@ -1,18 +1,30 @@
 package cz.muni.ia158.PongRobot;
 
+import cz.muni.ia158.Motors.MotorController;
+import cz.muni.ia158.Motors.SensorController;
 import lejos.hardware.lcd.LCD;
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.MotorPort;
-import lejos.robotics.RegulatedMotor;
-import lejos.utility.Delay;
 
 public class MatousTestMain {
-	public static void main(String[] args) {
-		RegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.D);
-		RegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.C);
-		leftMotor.synchronizeWith(new RegulatedMotor[] {rightMotor});
-		leftMotor.startSynchronization();
-		leftMotor.rotate(1080);
-		leftMotor.endSynchronization();
+	public static void main(String[] args) throws InterruptedException {
+		SensorController sc = new SensorController();
+		MotorController mc = new MotorController(sc);
+		
+//		mc.goTo(0.5);
+		sc.waitForImpact();
+		mc.goTo(0.2);
+		
+//		Thread.sleep(4000);
+		
+//		mc.goToStart();
+//		mc.goTo(0.7);
+//		mc.goTo(0.5);
+//		mc.goTo(0.7);
+//		mc.goTo(0.1);;
+//		mc.goTo(1);
+//		mc.goTo(0);
+//		
+		mc.close();
+		sc.close();
 	}
 }
+
