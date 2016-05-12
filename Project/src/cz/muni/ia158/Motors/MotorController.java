@@ -13,7 +13,7 @@ public class MotorController {
 	private final RegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
 	private final RegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.D);
 	
-	private volatile int areaLength; //in wheels rotations degrees
+	private int areaLength; //in wheels rotations degrees
 	
 	private boolean lastDirectionForward = false; //was the last movement forward movement?
 	
