@@ -14,7 +14,7 @@ robot lane distance from right markers, robot lane length
 int main(int argc, char **argv)
 {
     TCPServerSimple server;
-    //server.waitForConnection();
+    server.waitForConnection();
     Point2d rectangle_size;
     rectangle_size.x = double(atoi(argv[1]));
     rectangle_size.y = double(atoi(argv[2]));
@@ -121,8 +121,8 @@ int main(int argc, char **argv)
             bool ballPresent = false;
             bool tooManyObjects = false;
             size_t ball_regions_n = segmentation(ball, ball_labels);
-            Mat ball_pt(1, 1, CV_64FC3);
-            ball_pt.at<Point2d>(0, 0) = Point2d(0, 0);
+            Mat ball_pt(1, 1, CV_32FC2);
+            ball_pt.at<Point2f>(0, 0) = Point2f(0, 0);
             switch (ball_regions_n)
             {
             case 1:
@@ -132,8 +132,8 @@ int main(int argc, char **argv)
             case 2:
                 ballPresent = true;
                 pos<float> ball_center = segmentCenter(ball_labels, 1);
-                ball_pt.at<Point3d>(0, 0).x = ball_center.col;
-                ball_pt.at<Point3d>(0, 0).y = ball_center.row;
+                ball_pt.at<Point2f>(0, 0).x = ball_center.col;
+                ball_pt.at<Point2f>(0, 0).y = ball_center.row;
                 break;
             default:
                 printf("too many objects in scene\n");
@@ -155,6 +155,7 @@ int main(int argc, char **argv)
                 rectanglePoints[1] = Point2f(rectangle_size.x, 0);
                 rectanglePoints[2] = Point2f(0, rectangle_size.y);
                 rectanglePoints[3] = Point2f(rectangle_size.x, rectangle_size.y);
+
                 Mat transformMatrix = getPerspectiveTransform(perspectivePoints, rectanglePoints);
                 Mat ball_pt_transformed;
                 transform(ball_pt, ball_pt_transformed, transformMatrix);
@@ -165,17 +166,18 @@ int main(int argc, char **argv)
                     const double MIN_SPEED = 1.0;
                     if (motion_vector.x > 0.0 && len_sq >= MIN_SPEED * MIN_SPEED)
                     {
-                        double result = calcCrossingPoint(ball_pos, ball_pt_transformed.at<Point2d>(0, 0), rectangle_size, robot_lane_dist, robot_lane_length);
+                        double result = calcCrossingPointf(ball_pos, ball_pt_transformed.at<Point2f>(0, 0), rectangle_size, robot_lane_dist, robot_lane_length);
                         if (result < 0.0) result = 0.0;
                         if (result > 1.0) result = 1.0;
                         printf("SENDING: %f\n", result);
                         server.sentData(result);
+                        //system("PAUSE");
                     }
                 }
                 ball_pos = ball_pt_transformed.at<Point2f>(0, 0);
                 last_ball_pos_valid = true;
 
-                printf("ball at %f %f\n", ball_pt_transformed.at<Point2d>(0, 0).x, ball_pt_transformed.at<Point2d>(0, 0).y);
+                printf("ball at %f %f\n", ball_pt_transformed.at<Point2f>(0, 0).x, ball_pt_transformed.at<Point2f>(0, 0).y);
             }
             /*for (int j = 0; j < 4; j++)
             {
@@ -186,7 +188,7 @@ int main(int argc, char **argv)
             circle(original, Point(markerPositions[bestFitIndex][2].col, markerPositions[bestFitIndex][2].row), 5, Scalar(0, 0, 255), 3);
             circle(original, Point(markerPositions[bestFitIndex][3].col, markerPositions[bestFitIndex][3].row), 5, Scalar(0, 255, 255), 3);
             if (ballPresent)
-                circle(original, Point(ball_pt.at<Point3d>(0, 0).x, ball_pt.at<Point3d>(0, 0).y), 10, Scalar(0, 140, 255), 3);
+                circle(original, Point(ball_pt.at<Point2f>(0, 0).x, ball_pt.at<Point2f>(0, 0).y), 10, Scalar(0, 140, 255), 3);
         }
         imshow("Display window", original);
         waitKey(1);

@@ -96,12 +96,12 @@ pos<float> segmentCenter(const img<size_t> &labels, size_t segmentLabel)
     return center;
 }
 
-double calcCrossingPoint(Point2d ball_pos1, Point2d ball_pos2, Point2d rectangle_size, double robot_lane_dist, double robot_lane_length)
+double calcCrossingPointd(Point2d ball_pos1, Point2d ball_pos2, Point2d rectangle_size, double robot_lane_dist, double robot_lane_length)
 {
     Point2d robot_lane_top(rectangle_size.x + robot_lane_dist, -(robot_lane_length - rectangle_size.y) / 2);
     Point2d robot_lane_bottom(rectangle_size.x + robot_lane_dist, (robot_lane_length + rectangle_size.y) / 2);
     Point2d intersection;
-    int intersection_result = twoLinesIntersection(ball_pos1, ball_pos2, robot_lane_top, robot_lane_bottom, intersection);
+    int intersection_result = twoLinesIntersectiond(ball_pos1, ball_pos2, robot_lane_top, robot_lane_bottom, intersection);
     if (intersection_result != 0)
         return 0.0;
     double ratio = sqrt(
@@ -111,7 +111,22 @@ double calcCrossingPoint(Point2d ball_pos1, Point2d ball_pos2, Point2d rectangle
     return 1.0 - ratio;
 }
 
-int twoLinesIntersection(Point2d k, Point2d l, Point2d p, Point2d q, Point2d &intersection)
+float calcCrossingPointf(Point2f ball_pos1, Point2f ball_pos2, Point2f rectangle_size, float robot_lane_dist, float robot_lane_length)
+{
+    Point2f robot_lane_top(rectangle_size.x + robot_lane_dist, -(robot_lane_length - rectangle_size.y) / 2);
+    Point2f robot_lane_bottom(rectangle_size.x + robot_lane_dist, (robot_lane_length + rectangle_size.y) / 2);
+    Point2f intersection;
+    int intersection_result = twoLinesIntersectionf(ball_pos1, ball_pos2, robot_lane_top, robot_lane_bottom, intersection);
+    if (intersection_result != 0)
+        return 0.0;
+    double ratio = sqrt(
+        (sqr(intersection.x - robot_lane_top.x) + sqr(intersection.y - robot_lane_top.y)) /
+        (sqr(robot_lane_bottom.x - robot_lane_top.x) + sqr(robot_lane_bottom.y - robot_lane_top.y))
+        );
+    return 1.0 - ratio;
+}
+
+int twoLinesIntersectiond(Point2d k, Point2d l, Point2d p, Point2d q, Point2d &intersection)
 {
     const double a1 = l.y - k.y;
     const double b1 = k.x - l.x;
@@ -121,6 +136,23 @@ int twoLinesIntersection(Point2d k, Point2d l, Point2d p, Point2d q, Point2d &in
     const double c2 = a2 * p.x + b2 * p.y;
 
     const double denom = a1 * b2 - b1 * a2;
+    if (abs(denom) < 0.00001)
+        return -1;
+    intersection.x = (c1 * b2 - b1 * c2) / denom;
+    intersection.y = (a1 * c2 - c1 * a2) / denom;
+    return 0;
+}
+
+int twoLinesIntersectionf(Point2f k, Point2f l, Point2f p, Point2f q, Point2f &intersection)
+{
+    const float a1 = l.y - k.y;
+    const float b1 = k.x - l.x;
+    const float c1 = a1 * k.x + b1 * k.y;
+    const float a2 = q.y - p.y;
+    const float b2 = p.x - q.x;
+    const float c2 = a2 * p.x + b2 * p.y;
+
+    const float denom = a1 * b2 - b1 * a2;
     if (abs(denom) < 0.00001)
         return -1;
     intersection.x = (c1 * b2 - b1 * c2) / denom;

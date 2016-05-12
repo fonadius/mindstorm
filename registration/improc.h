@@ -135,9 +135,13 @@ void nullAtMarkers(cv::Mat &im, const img<size_t> &labels, const pos<image_size>
 
 pos<float> segmentCenter(const img<size_t> &labels, size_t segmentLabel);
 
-double calcCrossingPoint(cv::Point2d ball_pos, cv::Point2d motion_vector, cv::Point2d rectangle_size, double robot_lane_dist, double robot_lane_length);
+double calcCrossingPointd(cv::Point2d ball_pos, cv::Point2d motion_vector, cv::Point2d rectangle_size, double robot_lane_dist, double robot_lane_length);
 
-int twoLinesIntersection(cv::Point2d k, cv::Point2d l, cv::Point2d p, cv::Point2d q, cv::Point2d &intersection);
+float calcCrossingPointf(cv::Point2f ball_pos1, cv::Point2f ball_pos2, cv::Point2f rectangle_size, float robot_lane_dist, float robot_lane_length);
+
+int twoLinesIntersectiond(cv::Point2d k, cv::Point2d l, cv::Point2d p, cv::Point2d q, cv::Point2d &intersection);
+
+int twoLinesIntersectionf(cv::Point2f k, cv::Point2f l, cv::Point2f p, cv::Point2f q, cv::Point2f &intersection);
 
 template <typename T>
 T sqr(T n) { return n * n; }
