@@ -65,7 +65,7 @@ public class TCPConnection {
 	}
 
 	public boolean closed() {
-		return socket.isClosed();
+		return socket.isClosed() || socket.isInputShutdown();
 	}
 
 }

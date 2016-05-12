@@ -63,7 +63,7 @@ public class BallInformationMessage {
 	 */
 	@Override
 	public String toString() {
-		return xcoord + ";" + time + ";" + isRed + ";";
+		return xcoord + ";" + time + ";";	
 	}
 
 	
