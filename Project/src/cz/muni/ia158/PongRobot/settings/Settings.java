@@ -29,10 +29,10 @@ public class Settings {
         
         
         private RuntimeSettings() {
-            String[] settings = FileUtils.getLines(Settings.SETTING_PATH).get(0).split(";");
+        //    String[] settings = FileUtils.getLines(Settings.SETTING_PATH).get(0).split(";");
             
-            this.serverUrl = settings[0];
-            this.serverPort = Integer.parseInt(settings[1]);
+            this.serverUrl = "127.0.0.1";
+            this.serverPort = 27015;
       
         }
         

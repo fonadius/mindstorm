@@ -1,7 +1,5 @@
 package cz.muni.ia158.PongRobot.tcp;
 
-import static cz.muni.ia158.PongRobot.settings.Settings.runtimeSettings;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;

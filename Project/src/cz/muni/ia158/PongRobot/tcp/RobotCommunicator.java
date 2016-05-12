@@ -1,6 +1,5 @@
 package cz.muni.ia158.PongRobot.tcp;
 
-import static cz.muni.ia158.PongRobot.settings.Settings.runtimeSettings;
 
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -25,7 +24,7 @@ public class RobotCommunicator implements Runnable{
 	public void run() {
 		System.out.println("Starting robot communication");
 		try {
-			transmitter = new TCPConnection(runtimeSettings.getServerUrl(), runtimeSettings.getControlUnitPort());
+			transmitter = new TCPConnection("127.0.0.1", 27015);
 		} catch (IOException ex) {
 			System.out.println("Cannot create transmitter: " + ex);
 			ex.printStackTrace();
