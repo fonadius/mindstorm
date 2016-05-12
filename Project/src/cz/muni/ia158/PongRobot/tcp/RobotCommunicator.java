@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import cz.muni.ia158.Motors.MotorController;
 import cz.muni.ia158.PongRobot.settings.Settings;
 import cz.muni.ia158.PongRobot.tests.tcp.BallInformationMessageTest;
+import lejos.hardware.lcd.LCD;
 
 public class RobotCommunicator implements Runnable{
 	private TCPConnection transmitter;
@@ -24,7 +25,7 @@ public class RobotCommunicator implements Runnable{
 	public void run() {
 		System.out.println("Starting robot communication");
 		try {
-			transmitter = new TCPConnection("127.0.0.1", 27015);
+			transmitter = new TCPConnection(Settings.runtimeSettings.getServerUrl(), Settings.runtimeSettings.getControlUnitPort());
 		} catch (IOException ex) {
 			System.out.println("Cannot create transmitter: " + ex);
 			ex.printStackTrace();
@@ -36,13 +37,13 @@ public class RobotCommunicator implements Runnable{
 			try {
 				message = transmitter.readLineBlocking();
 				BallInformationMessage ballInfo = BallInformationMessage.parseString(message);
-				System.out.println("Robot recieved msg: " + ballInfo);
+				LCD.drawString("Msg: " + ballInfo, 0, 1);
 				if(ballInfo.getTime() == 6666){
 					break; //ugly, hardcoded termination message... had some trouble with detecting closed socket..
 				}
 				boolean added = queue.offer(ballInfo, Settings.QueueWaitingTime, TimeUnit.MILLISECONDS);
 				if (!added) {
-					System.out.println("Waiting for queue timmed out. Msg is dropped.");
+					LCD.drawString("Waiting for queue timmed out. Msg is dropped.", 0, 3);
 				}
 				
 			} catch (IOException ex) {

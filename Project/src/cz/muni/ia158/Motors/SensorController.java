@@ -3,7 +3,6 @@ package cz.muni.ia158.Motors;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.lcd.LCD;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
@@ -24,21 +23,15 @@ public class SensorController {
 
 	public void waitForImpact() {
 		setLightBusy();
-		boolean wasTrue = false;
-		while (true) {
+		while (!touchAdapter.isPressed() && !Thread.currentThread().isInterrupted()) {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			LCD.drawString("" + wasTrue, 0, 0);
-			if (touchAdapter.isPressed()) {
-				wasTrue = true;
+				break;
 			}
 		}
-//		Sound.beepSequence();
-//		setLightOff();
+		Sound.beep();
+		setLightOff();
 	}
 	
 	public boolean isGroudGreen() {

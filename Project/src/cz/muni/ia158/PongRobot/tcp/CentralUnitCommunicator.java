@@ -3,6 +3,7 @@ package cz.muni.ia158.PongRobot.tcp;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,21 +17,24 @@ public class CentralUnitCommunicator {
 		System.out.println("CUC");
 //use different thread to listen to events.
 		try {
-
+		
 			TCPServer listener = new TCPServer(PORT);
+			System.out.println("Waiting for connection...");
 			TCPConnection connection = listener.waitForConnection();
-            //should get from server...
-			Random random = new Random();
 		
 			while (true) {
 				
 				try {
-					Thread.sleep(random.nextInt(2000));
+					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				BallInformationMessage message = new BallInformationMessage(random.nextDouble()*100, random.nextLong()*100);
+				Scanner reader = new Scanner(System.in);
+				System.out.print("Write your input: ");
+				double pose = reader.nextDouble();
+				reader.close();
+				BallInformationMessage message = new BallInformationMessage(pose, 0);
 				System.out.println("Server writing: " + message.toString());
 				connection.write(message.toString() + "\n");
 				
