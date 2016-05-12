@@ -2,6 +2,7 @@ package cz.muni.ia158.PongRobot;
 
 import cz.muni.ia158.Motors.MotorController;
 import cz.muni.ia158.Motors.SensorController;
+import lejos.hardware.Sound;
 import lejos.hardware.lcd.LCD;
 
 public class MatousTestMain {
@@ -9,20 +10,14 @@ public class MatousTestMain {
 		SensorController sc = new SensorController();
 		MotorController mc = new MotorController(sc);
 		
-//		mc.goTo(0.5);
-		sc.waitForImpact();
-		mc.goTo(0.2);
 		
-//		Thread.sleep(4000);
-		
-//		mc.goToStart();
-//		mc.goTo(0.7);
-//		mc.goTo(0.5);
-//		mc.goTo(0.7);
-//		mc.goTo(0.1);;
-//		mc.goTo(1);
-//		mc.goTo(0);
-//		
+		mc.goTo(0.5, false);
+		Thread.sleep(1000);
+		mc.goTo(2, true);
+//		mc.finishMovement();
+		mc.goTo(0.1, true);
+		Thread.sleep(5000);
+				
 		mc.close();
 		sc.close();
 	}

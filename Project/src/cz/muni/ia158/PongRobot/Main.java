@@ -12,8 +12,8 @@ public class Main {
 		BlockingQueue<BallInformationMessage> queue = new ArrayBlockingQueue<>(20);
 		RobotCommunicator comm = new RobotCommunicator(queue);
 		RobotDriver control = new RobotDriver(queue);
-		new Thread(comm).start();
 		new Thread(control).start();
+		new Thread(comm).start();
 		System.out.println("Communication and controlls started");
 	}
 
